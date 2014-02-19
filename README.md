@@ -9,7 +9,7 @@ A restful service demo using tornado &amp; sqlalchemy
 
 | API | Description          |
 | ------------- | ----------- |
-| /login      | 登录|
+| /login/      | 登录|
 | /user/     | 复数用户信息     |
 | /user/{id}/ | 单个用户信息 |
 | /circle/ | 复数quan信息 |
