@@ -95,6 +95,17 @@ class Membership(BaseModel):
         return "%s/circle/%d/member/%d/" % (options.domain, self.circle_id,
                                             self.user_id)
 
+    @property
+    def json(self):
+        return {
+            'member_id': self.user_id,
+            'member_url': self.member.url,
+            'circle_id': self.circle_id,
+            'circle_url': self.circle.url,
+            'status': self.status,
+            'membership_url': self.url,
+        }
+
 
 class Status(BaseModel):
     __tablename__ = 'status'

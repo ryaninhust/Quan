@@ -6,11 +6,12 @@ from core.views import AppHandler
 from core.models.subjects import Circle, User, Status, Membership
 
 from permissions import CirclePermission
+import consts
 
 
 class LoginHandler(AppHandler):
 
-    def json_validate(self):
+    def validate_post(self):
 
         self.validate_field_exist('cell_phone')
         self.validate_field_exist('password')
@@ -34,8 +35,7 @@ class LoginHandler(AppHandler):
 
 class UserListHandler(AppHandler):
 
-    def json_validate(self):
-
+    def validate_post(self):
         self.validate_field_exist('cell_phone')
         self.validate_field_exist('password')
 
@@ -66,6 +66,10 @@ class UserDetailHandler(AppHandler):
     def get(self, **kwargs):
         self.write(self.query_user.json)
 
+    def validate_put(self):
+        validate_keys = ['password', ]
+        self.validate_fields_scope()
+
     def put(self, **kwargs):
         password = self.request_json.get('password', None)
         if password:
@@ -78,7 +82,7 @@ class UserDetailHandler(AppHandler):
 
 class CircleListHandler(AppHandler):
 
-    def json_validate(self):
+    def validate_post(self):
         self.validate_field_exist('name')
         self.validate_field_exist('description')
 
@@ -91,8 +95,8 @@ class CircleListHandler(AppHandler):
         description = self.request_json['description']
         circle = Circle(name=name, description=description)
         self.db.add(circle)
-        membership = Membership(status=0, member=self.current_user,
-                                circle=circle)
+        membership = Membership(member=self.current_user, circle=circle)
+        membership.status = consts.ACCEPTED
         self.db.add(membership)
         self.write(circle.json)
         self.db.commit()
@@ -115,7 +119,7 @@ class CircleDetailHandler(CircleHandler):
     def get(self, **kwargs):
         self.write(self.query_circle.json)
 
-    def json_validate(self):
+    def validate_put(self):
         valide_keys = ['name', 'description']
         self.validate_fields_scope(self.request_json.keys(), valide_keys)
 
@@ -128,9 +132,10 @@ class CircleDetailHandler(CircleHandler):
 class CircleStatusHandler(CircleHandler):
 
     def get(self, **kwargs):
-        self.write({'list': [status.json for status in self.query_circle.status]})
+        self.write({'list': [
+                   status.json for status in self.query_circle.status]})
 
-    def json_validate(self):
+    def validate_post(self):
         self.validate_field_exist('content')
 
     def post(self, **kwargs):
@@ -140,3 +145,24 @@ class CircleStatusHandler(CircleHandler):
         self.db.add(status)
         self.db.commit()
         self.write(status.json)
+
+
+class CircleMemberHandler(CircleHandler):
+
+    permission_class = CirclePermission
+
+    def get(self, **kwargs):
+        self.write({'list': [user.json for user in self.query_circle.members]})
+
+    def validate_post(self):
+        self.validate_field_exist('member_id')
+
+    def post(self, **kwargs):
+        new_member = self.db.query(User).get(self.request_json['member_id'])
+        if not new_member:
+            raise local_exc.UserNotExistError
+        membership = Membership(member=new_member, circle=self.query_circle)
+        membership.status = consts.WATING_ACCEPT
+        self.db.add(membership)
+        self.db.commit()
+        self.write(membership.json)
