@@ -11,7 +11,7 @@ import consts
 
 class LoginHandler(AppHandler):
 
-    def validate_post(self):
+    def json_validate(self):
 
         self.validate_field_exist('cell_phone')
         self.validate_field_exist('password')
