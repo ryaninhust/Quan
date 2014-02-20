@@ -22,6 +22,16 @@ class JsonValidateMessagesMixin(object):
         if set(json_keys) - set(valide_keys):
             raise JsonRequestError("Invalide key included")
 
+    def validate_post(self):
+        pass
+
+    def validate_put(self):
+        pass
+
+    def json_validate(self, request_method):
+        validate_method = getattr(self, request_method)
+        validate_method()
+
 
 class JsonRequestResponseMixin(JsonValidateMessagesMixin):
 
