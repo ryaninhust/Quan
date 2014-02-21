@@ -67,8 +67,8 @@ class UserDetailHandler(AppHandler):
         self.write(self.query_user.json)
 
     def validate_put(self):
-        validate_keys = ['password', ]
-        self.validate_fields_scope()
+        valide_keys = ['password', ]
+        self.validate_fields_scope(self.request_json.keys(), valide_keys)
 
     def put(self, **kwargs):
         password = self.request_json.get('password', None)
@@ -156,6 +156,8 @@ class CircleMemberHandler(CircleHandler):
 
     def validate_post(self):
         self.validate_field_exist('member_id')
+        valide_keys = ['member_id', ]
+        self.validate_fields_scope(self.request_json.keys(), valide_keys)
 
     def post(self, **kwargs):
         new_member = self.db.query(User).get(self.request_json['member_id'])

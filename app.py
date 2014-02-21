@@ -1,4 +1,4 @@
-# Python imports:w
+# Python imports
 
 
 # Tornado imports
