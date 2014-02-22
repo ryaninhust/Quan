@@ -4,6 +4,7 @@ import json
 from tornado.web import HTTPError
 from sqlalchemy.orm.exc import NoResultFound
 
+
 class AppException(HTTPError):
 
     """App exception base class
@@ -22,25 +23,31 @@ class AppException(HTTPError):
 class UserNotExistError(AppException):
 
     def __init__(self, *args, **kwargs):
-        AppException.__init__(400, '用户不存在')
+        AppException.__init__(self, 400, '用户不存在')
 
 
 class CircleNotExistError(AppException):
 
     def __init__(self, *args, **kwargs):
-        AppException.__init__(400, '圈子不存在')
+        AppException.__init__(self, 400, '圈子不存在')
+
+
+class MembershipNotExistError(AppException):
+
+    def __init__(self, *args, **kwargs):
+        AppException.__init__(self, 404, '关系不存在')
 
 
 class AuthError(AppException):
 
     def __init__(self, *args, **kwargs):
-        AppException.__init__(401, '权限认证失败')
+        AppException.__init__(self, 401, '权限认证失败')
 
 
 class LoginError(AppException):
 
     def __init__(self, *args, **kwargs):
-        AppException.__init__(401, '登录密码错误')
+        AppException.__init__(self, 401, '登录密码错误')
 
 
 class PermissionError(AppException):

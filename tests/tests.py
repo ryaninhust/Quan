@@ -100,3 +100,39 @@ class TestCircleStatus(AppTestCase):
                                  data=json.dumps(json_content))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['content'], 'this is the first fuck')
+
+
+class TestCircleMember(AppTestCase):
+    test_url = DOMAIN + '/circle/1/member/'
+
+    def test_get(self):
+        headers = {'Authorization': '930b5250fb9e23c32e8b9357d8334aa3e373ff7a'}
+        response = requests.get(self.test_url, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        headers = {'authorization': '930b5250fb9e23c32e8b9357d8334aa3e373ff7a'}
+        json_content = {'member_id': 2}
+        response = requests.post(self.test_url, headers=headers,
+                                 data=json.dumps(json_content))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['member_id'], 2)
+        self.assertEqual(response.json['status'], 1)
+        print response.json
+
+
+class TestCircleMemberDetail(AppTestCase):
+    test_url = DOMAIN + '/circle/1/member/2/'
+
+    def test_get(self):
+        headers = {'authorization': '930b5250fb9e23c32e8b9357d8334aa3e373ff7a'}
+        response = requests.get(self.test_url, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+    def test_put(self):
+        headers = {'authorization': '930b5250fb9e23c32e8b9357d8334aa3e373ff7a'}
+        json_content = {'status': 2}
+        response = requests.put(self.test_url, headers=headers,
+                                data=json.dumps(json_content))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['status'], 2)

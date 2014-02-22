@@ -168,3 +168,31 @@ class CircleMemberHandler(CircleHandler):
         self.db.add(membership)
         self.db.commit()
         self.write(membership.json)
+
+
+class CircleMemberDetailHandler(CircleHandler):
+
+    permission_class = CirclePermission
+
+    def prepare(self):
+        query_dict = {'user_id': self.path_kwargs['mid'],
+                      'circle_id': self.path_kwargs['cid']}
+
+        self.membership = self.db.query(Membership).filter_by(**query_dict).first()
+        if not self.membership:
+            raise local_exc.MembershipNotExistError
+
+        super(CircleMemberDetailHandler, self).prepare()
+
+    def get(self, **kwargs):
+        self.write(self.membership.json)
+
+    def validate_put(self):
+        self.validate_field_exist('status')
+        valide_keys = ['status', ]
+        self.validate_fields_scope(self.request_json.keys(), valide_keys)
+
+    def put(self, **kwargs):
+        self.membership.update(self.request_json)
+        self.db.commit()
+        self.write(self.membership.json)
