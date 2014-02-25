@@ -27,8 +27,8 @@ class TestUsers(AppTestCase):
         json_content = {'cell_phone': 13667148902, 'password': 'hello user'}
         response = requests.post(self.test_url, data=json.dumps(json_content))
         self.assertEqual(response.status_code, 200)
-        self.assertIn('access_token', response.json.keys())
-        self.assertIn('url', response.json.keys())
+        self.assertIn('access_token', response.json().keys())
+        self.assertIn('url', response.json().keys())
 
     def test_get(self):
         response = requests.get(self.test_url)
@@ -41,15 +41,15 @@ class TestUser(AppTestCase):
     def test_get(self):
         response = requests.get(self.test_url)
         self.assertEqual(200, response.status_code)
-        user_dict = response.json
+        user_dict = response.json()
         self.assertEqual(user_dict['cell_phone'], '13667148900')
 
     def test_put(self):
         json_content = {'name': 'yuanbowen', 'email': 'yuanbowen@douban.com'}
         response = requests.put(self.test_url, data=json.dumps(json_content))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json['name'], 'yuanbowen')
-        self.assertEqual(response.json['email'], 'yuanbowen@douban.com')
+        self.assertEqual(response.json()['name'], 'yuanbowen')
+        self.assertEqual(response.json()['email'], 'yuanbowen@douban.com')
 
 
 class TestCirlces(AppTestCase):
@@ -61,7 +61,7 @@ class TestCirlces(AppTestCase):
         response = requests.post(self.test_url, data=json.dumps(json_content),
                                  headers=headers)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json['name'], 'fucking girl')
+        self.assertEqual(response.json()['name'], 'fucking girl')
 
 
 class TestCircle(AppTestCase):
@@ -81,8 +81,8 @@ class TestCircle(AppTestCase):
         response = requests.put(
             self.test_url, headers=headers, data=json.dumps(json_content))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json['name'], 'fuck man')
-        self.assertEqual(response.json['description'], 'fuck boy')
+        self.assertEqual(response.json()['name'], 'fuck man')
+        self.assertEqual(response.json()['description'], 'fuck boy')
 
 
 class TestCircleStatus(AppTestCase):
@@ -99,7 +99,7 @@ class TestCircleStatus(AppTestCase):
         response = requests.post(self.test_url, headers=headers,
                                  data=json.dumps(json_content))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json['content'], 'this is the first fuck')
+        self.assertEqual(response.json()['content'], 'this is the first fuck')
 
 
 class TestCircleMember(AppTestCase):
@@ -116,9 +116,8 @@ class TestCircleMember(AppTestCase):
         response = requests.post(self.test_url, headers=headers,
                                  data=json.dumps(json_content))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json['member_id'], 2)
-        self.assertEqual(response.json['status'], 1)
-        print response.json
+        self.assertEqual(response.json()['member_id'], 2)
+        self.assertEqual(response.json()['status'], 1)
 
 
 class TestCircleMemberDetail(AppTestCase):
@@ -135,4 +134,4 @@ class TestCircleMemberDetail(AppTestCase):
         response = requests.put(self.test_url, headers=headers,
                                 data=json.dumps(json_content))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json['status'], 2)
+        self.assertEqual(response.json()['status'], 2)
