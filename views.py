@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from core import exceptions as local_exc
-from core.views import AppHandler
-from core.models.subjects import Circle, User, Status, Membership
-
-from permissions import CirclePermission
 import consts
+from core import exceptions as local_exc
+from core.models.subjects import Circle, Membership, OauthToken, Status, User
+from core.views import AppHandler
+from permissions import CirclePermission
 
 
 class LoginHandler(AppHandler):
@@ -36,15 +35,23 @@ class LoginHandler(AppHandler):
 class UserListHandler(AppHandler):
 
     def validate_post(self):
-        self.validate_field_exist('cell_phone')
-        self.validate_field_exist('password')
+        valide_keys = ['cell_phone', 'password', 'access_token', 'token_type']
+        self.validate_fields_scope(self.request_json.keys(), valide_keys)
 
     def post(self):
-        cell_phone = self.request_json['cell_phone']
-        password = self.request_json['password']
-        user = User(cell_phone=cell_phone, password=password)
+        user = User(**self.request_json)
         self.db.add(user)
+
+        if 'access_token' in self.request_json:
+            access_token = self.request_json['access_token']
+            token_type = self.request_json['token_type']
+            oauth_token = OauthToken(
+                token_type=token_type, access_token=access_token)
+            oauth_token.user = user
+            self.db.add(oauth_token)
+
         self.db.commit()
+
         token_dict = {'access_token': user.generate_key(),
                       'url': user.url}
         self.write(token_dict)
@@ -178,7 +185,8 @@ class CircleMemberDetailHandler(CircleHandler):
         query_dict = {'user_id': self.path_kwargs['mid'],
                       'circle_id': self.path_kwargs['cid']}
 
-        self.membership = self.db.query(Membership).filter_by(**query_dict).first()
+        self.membership = self.db.query(
+            Membership).filter_by(**query_dict).first()
         if not self.membership:
             raise local_exc.MembershipNotExistError
 

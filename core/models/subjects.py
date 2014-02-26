@@ -128,3 +128,13 @@ class Status(BaseModel):
             'circle': self.cirlce.url,
             'timestamp': datetime_to_unixtime(self.timestamp),
         }
+
+
+class OauthToken(BaseModel):
+    __tablename__ = 'oauth_token'
+
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    token_type = Column(Integer, nullable=False)
+    access_token = Column(String(32), nullable=False)
+    refresh_token = Column(String(32), nullable=False)
+    user = relationship(User, backref=backref('tokens'))

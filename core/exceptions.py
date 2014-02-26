@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 
-from tornado.web import HTTPError
 from sqlalchemy.orm.exc import NoResultFound
+from tornado.web import HTTPError
 
 
 class AppException(HTTPError):
