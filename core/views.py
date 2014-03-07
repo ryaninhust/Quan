@@ -1,11 +1,13 @@
 import sys
 import traceback
+from datetime import datetime
 
 from tornado.web import RequestHandler
 
 from core import exceptions as local_exc
 from core.mixins import JsonRequestResponseMixin
 from core.models.subjects import User
+from core.models.decorators import update_last_login
 from core.permissions import BasePermission
 
 
@@ -18,6 +20,7 @@ class BaseHandler(RequestHandler):
         """
         self.db = self.application.db
 
+    @update_last_login
     def get_current_user(self):
         """Get request user from 'Authorization' header
         If got a valid user, return it, otherwise return None
@@ -27,11 +30,8 @@ class BaseHandler(RequestHandler):
         if not access_token:
             raise local_exc.AuthError
 
-        try:
-            return self.db.query(User).filter_by(
-                access_token=access_token).one()
-        except local_exc.NoResultFound:
-            return None
+        user = self.db.query(User).filter_by(access_token=access_token).first()
+        return user
 
     def prepare(self):
         self.check_permission()

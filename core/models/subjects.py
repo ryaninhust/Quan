@@ -1,6 +1,7 @@
 import hmac
 import uuid
 from hashlib import sha1
+from datetime import datetime
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -21,7 +22,7 @@ class User(BaseModel):
 
     cell_phone = Column(String(15), index=True, unique=True)
     avatar_url = Column(String(100))
-    first_login = Column(DateTime())
+    first_login = Column(DateTime(), default=datetime.now)
     loc_uid = Column(Integer, nullable=True)
 
     last_login = Column(DateTime())

@@ -74,7 +74,7 @@ class UserDetailHandler(AppHandler):
         self.write(self.query_user.json)
 
     def validate_put(self):
-        valide_keys = ['password', ]
+        valide_keys = ['password', 'loc_uid', 'last_login']
         self.validate_fields_scope(self.request_json.keys(), valide_keys)
 
     def put(self, **kwargs):
