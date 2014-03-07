@@ -23,8 +23,8 @@ class LoginHandler(AppHandler):
             if user.check_password(password):
                 user.last_login = datetime.now()
                 user.access_token = user.generate_key()
-                token_dict = {'access_token': user.access_token}
                 self.db.commit()
+                token_dict = {'access_token': user.access_token}
                 self.write(token_dict)
             else:
                 raise local_exc.LoginError

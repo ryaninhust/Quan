@@ -22,6 +22,7 @@ class User(BaseModel):
     cell_phone = Column(String(15), index=True, unique=True)
     avatar_url = Column(String(100))
     first_login = Column(DateTime())
+    loc_uid = Column(Integer, nullable=True)
 
     last_login = Column(DateTime())
     is_active = Column(Boolean())
@@ -138,3 +139,11 @@ class OauthToken(BaseModel):
     access_token = Column(String(32), nullable=False)
     refresh_token = Column(String(32), nullable=False)
     user = relationship(User, backref=backref('tokens'))
+
+
+class Location(BaseModel):
+    __tablename__ = 'location'
+    loc_id = Column(Integer, unique=True)
+    loc_uid = Column(String(32), unique=True)
+    name = Column(String(32))
+    parent_uid = Column(String(32))
