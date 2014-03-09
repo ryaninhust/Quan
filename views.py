@@ -3,7 +3,14 @@ from datetime import datetime
 
 import consts
 from core import exceptions as local_exc
-from core.models.subjects import Circle, Membership, OauthToken, Status, User
+from core.models.subjects import (
+    Circle,
+    Discussion,
+    Membership,
+    OauthToken,
+    Status,
+    User
+)
 from core.views import AppHandler
 from permissions import CirclePermission
 
@@ -204,3 +211,32 @@ class CircleMemberDetailHandler(CircleHandler):
         self.membership.update(self.request_json)
         self.db.commit()
         self.write(self.membership.json)
+
+
+class StatusHandler(AppHandler):
+
+    def prepare(self):
+        status_id = self.path_kwargs['sid']
+        self.query_status = self.db.query(Status).get(status_id)
+        if not self.query_status:
+            raise local_exc.StatusNotExistError
+        super(StatusHandler, self).prepare()
+
+
+class StatusDiscussionListHandler(StatusHandler):
+
+    def get(self, **kwargs):
+        self.write({'list': [d.json for d in self.query_status.discssions]})
+
+    def validate_post(self):
+        self.validate_field_exist('user_id')
+        self.validate_field_exist('status_id')
+        self.validate_field_exist('content')
+        valide_keys = ['user_id', 'status_id', 'content']
+        self.validate_fields_scope(self.request_json.keys(), valide_keys)
+
+    def post(self, **kwargs):
+        discussion = Discussion(**self.request_json)
+        self.db.add(discussion)
+        self.db.commit()
+        self.write(discussion.json)

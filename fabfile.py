@@ -1,4 +1,5 @@
-from fabric.api import sudo, hosts, task
+from fabric.api import hosts, sudo, task
+
 
 @task
 @hosts('106.187.44.69')

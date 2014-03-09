@@ -1,15 +1,23 @@
 import hmac
 import uuid
-from hashlib import sha1
 from datetime import datetime
+from hashlib import sha1
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text
+)
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import backref, relationship
 from tornado.options import options
 
-from core.models.base import BaseModel
 from core.lib.time import datetime_to_unixtime
+from core.models.base import BaseModel
 
 
 class User(BaseModel):
@@ -148,3 +156,30 @@ class Location(BaseModel):
     loc_uid = Column(String(32), unique=True)
     name = Column(String(32))
     parent_uid = Column(String(32))
+
+    @property
+    def json(self):
+        return {
+            'loc_id': self.loc_id,
+            'loc_uid': self.loc_uid,
+            'name': self.name,
+            'parent_uid': self.parent_uid,
+        }
+
+
+class Discussion(BaseModel):
+    __tablename__ = 'discussion'
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    status_id = Column(Integer, ForeignKey('status.id'), nullable=False)
+    content = Column(Text, nullable=False)
+    user = relationship(User, backref=backref('discussions'))
+    status = relationship(Status, backref=backref('status'))
+
+    @property
+    def json(self):
+        return {
+            'user': self.user.url,
+            'status': self.status.url,
+            'content': self.content,
+            'timestamp': datetime_to_unixtime(self.timestamp),
+        }

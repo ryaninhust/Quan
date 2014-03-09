@@ -23,13 +23,18 @@ class AppException(HTTPError):
 class UserNotExistError(AppException):
 
     def __init__(self, *args, **kwargs):
-        AppException.__init__(self, 400, '用户不存在')
+        AppException.__init__(self, 404, '用户不存在')
 
 
 class CircleNotExistError(AppException):
 
     def __init__(self, *args, **kwargs):
-        AppException.__init__(self, 400, '圈子不存在')
+        AppException.__init__(self, 404, '圈子不存在')
+
+class StatusNotExistError(AppException):
+
+    def __init__(self, *args, **kwargs):
+        AppException.__init__(self, 404, '状态不存在')
 
 
 class MembershipNotExistError(AppException):
