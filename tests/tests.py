@@ -4,8 +4,6 @@ sys.path.append('/home/vagrant/personal/new_simi')
 from core.tests import AppTestCase
 from core.tests import requests
 
-from core import exceptions as local_exc
-
 import json
 
 DOMAIN = 'http://vagrant.intra.douban.com:8000'
@@ -135,3 +133,17 @@ class TestCircleMemberDetail(AppTestCase):
                                 data=json.dumps(json_content))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['status'], 2)
+
+
+class TestStatusDiscussionList(AppTestCase):
+    test_url = DOMAIN + '/status/1/discussion/'
+
+    def test_get(self):
+        response = requests.get(self.test_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        json_content = {'user_id': 1, 'content': 'hehe'}
+        response = requests.post(self.test_url, data=json.dumps(json_content))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['content'], 'hehe')

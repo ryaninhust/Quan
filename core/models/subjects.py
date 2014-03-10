@@ -173,7 +173,7 @@ class Discussion(BaseModel):
     status_id = Column(Integer, ForeignKey('status.id'), nullable=False)
     content = Column(Text, nullable=False)
     user = relationship(User, backref=backref('discussions'))
-    status = relationship(Status, backref=backref('status'))
+    status = relationship(Status, backref=backref('discussions'))
 
     @property
     def json(self):

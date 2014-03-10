@@ -226,17 +226,17 @@ class StatusHandler(AppHandler):
 class StatusDiscussionListHandler(StatusHandler):
 
     def get(self, **kwargs):
-        self.write({'list': [d.json for d in self.query_status.discssions]})
+        self.write({'list': [d.json for d in self.query_status.discussions]})
 
     def validate_post(self):
         self.validate_field_exist('user_id')
-        self.validate_field_exist('status_id')
         self.validate_field_exist('content')
-        valide_keys = ['user_id', 'status_id', 'content']
+        valide_keys = ['user_id', 'content']
         self.validate_fields_scope(self.request_json.keys(), valide_keys)
 
     def post(self, **kwargs):
         discussion = Discussion(**self.request_json)
+        discussion.status = self.query_status
         self.db.add(discussion)
         self.db.commit()
         self.write(discussion.json)

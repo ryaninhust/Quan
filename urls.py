@@ -11,4 +11,5 @@ handlers = [
     url(r'/circle/(?P<cid>[0-9])/status/', views.CircleStatusHandler, name='circle_status'),
     url(r'/circle/(?P<cid>[0-9])/member/', views.CircleMemberHandler, name='circle_members'),
     url(r'/circle/(?P<cid>[0-9])/member/(?P<mid>[0-9])/', views.CircleMemberDetailHandler, name='circle_member'),
+    url(r'/status/(?P<sid>[0-9])/discussion/', views.StatusDiscussionListHandler, name='status_discussion'),
 ]
