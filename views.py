@@ -29,7 +29,7 @@ class LoginHandler(AppHandler):
         if user:
             if user.check_password(password):
                 user.last_login = datetime.now()
-                user.access_token = user.generate_key()
+                user.generate_key()
                 self.db.commit()
                 token_dict = {'access_token': user.access_token}
                 self.write(token_dict)
@@ -39,10 +39,36 @@ class LoginHandler(AppHandler):
             raise local_exc.UserNotExistError
 
 
+class ThirdPartLoginHandler(AppHandler):
+
+    def json_validate(self):
+        self.validate_field_exist('oauth_token')
+        self.validate_field_exist('token_type')
+        self.validate_field_exist('third_uid')
+
+        valide_keys = ['oauth_token', 'token_type', 'third_uid']
+        self.validate_fields_scope(self.request_json.keys, valide_keys)
+
+    def post(self):
+        uid = self.request_json['third_uid']
+        token = self.db.query(OauthToken).filter_by(third_uid=uid).first()
+
+        if not token:
+            user = User()
+            self.db.add(user)
+            token = OauthToken(user=user, **self.request_json)
+            self.db.add(token)
+
+        token.user.last_login = datetime.now()
+        token.user.generate_key()
+        self.db.commit()
+        self.write({'access_token': token.user.access_token})
+
+
 class UserListHandler(AppHandler):
 
     def validate_post(self):
-        valide_keys = ['cell_phone', 'password', 'access_token', 'token_type']
+        valide_keys = ['cell_phone', 'password']
         self.validate_fields_scope(self.request_json.keys(), valide_keys)
 
     def post(self):
@@ -50,17 +76,15 @@ class UserListHandler(AppHandler):
         self.db.add(user)
 
         if 'access_token' in self.request_json:
-            access_token = self.request_json['access_token']
+            access_token = self.request_json['oauth_token']
             token_type = self.request_json['token_type']
             oauth_token = OauthToken(
                 token_type=token_type, access_token=access_token)
             oauth_token.user = user
             self.db.add(oauth_token)
 
+        token_dict = {'access_token': user.generate_key(), 'url': user.url}
         self.db.commit()
-
-        token_dict = {'access_token': user.generate_key(),
-                      'url': user.url}
         self.write(token_dict)
 
     def get(self):

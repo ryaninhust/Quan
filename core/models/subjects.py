@@ -144,6 +144,7 @@ class OauthToken(BaseModel):
     __tablename__ = 'oauth_token'
 
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    third_uid = Column(String(32), nullable=False)
     token_type = Column(Integer, nullable=False)
     access_token = Column(String(32), nullable=False)
     refresh_token = Column(String(32), nullable=False)
