@@ -51,7 +51,9 @@ class ThirdPartLoginHandler(AppHandler):
 
     def post(self):
         uid = self.request_json['third_uid']
-        token = self.db.query(OauthToken).filter_by(third_uid=uid).first()
+        token_type = self.request_json['token_type']
+        query_dict = {"uid": uid, token_type: 'token_type'}
+        token = self.db.query(OauthToken).filter_by(**query_dict).first()
 
         if not token:
             user = User()
@@ -83,8 +85,8 @@ class UserListHandler(AppHandler):
             oauth_token.user = user
             self.db.add(oauth_token)
 
-        token_dict = {'access_token': user.generate_key(), 'url': user.url}
         self.db.commit()
+        token_dict = {'access_token': user.generate_key(), 'url': user.url}
         self.write(token_dict)
 
     def get(self):
