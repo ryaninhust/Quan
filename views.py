@@ -85,8 +85,8 @@ class UserListHandler(AppHandler):
             oauth_token.user = user
             self.db.add(oauth_token)
 
-        self.db.commit()
         token_dict = {'access_token': user.generate_key(), 'url': user.url}
+        self.db.commit()
         self.write(token_dict)
 
     def get(self):
