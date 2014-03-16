@@ -1,3 +1,5 @@
 tornado
 sqlalchemy
 fabric
+requests
+raven

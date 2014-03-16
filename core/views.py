@@ -1,8 +1,8 @@
 import sys
 import traceback
-from datetime import datetime
 
 from tornado.web import RequestHandler
+from raven.contrib.tornado import SentryMixin
 
 from core import exceptions as local_exc
 from core.mixins import JsonRequestResponseMixin
@@ -11,7 +11,7 @@ from core.models.decorators import update_last_login
 from core.permissions import BasePermission
 
 
-class BaseHandler(RequestHandler):
+class BaseHandler(SentryMixin, RequestHandler):
 
     permission_class = BasePermission
 
@@ -28,7 +28,7 @@ class BaseHandler(RequestHandler):
         access_token = self.request.headers.get('Authorization', None)
 
         if not access_token:
-            raise local_exc.AuthError
+            return None
 
         user = self.db.query(User).filter_by(access_token=access_token).first()
         return user

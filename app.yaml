@@ -3,3 +3,4 @@ port: 8000
 debug: False
 db_path: mysql://root@localhost/simi
 remote_addr: 106.187.44.69
+sentry: https://54ceb78f4c2142e8a265cbfedbbeea4d:44e020be586246c88ab3b18af92dc036@app.getsentry.com/20987

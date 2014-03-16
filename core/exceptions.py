@@ -31,6 +31,7 @@ class CircleNotExistError(AppException):
     def __init__(self, *args, **kwargs):
         AppException.__init__(self, 404, '圈子不存在')
 
+
 class StatusNotExistError(AppException):
 
     def __init__(self, *args, **kwargs):

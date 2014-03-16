@@ -3,10 +3,16 @@ import tornado.auth
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
+import yaml
+from raven.contrib.tornado import AsyncSentryClient
 from tornado.options import define, options
 
 from core.models import session
 from urls import handlers
+
+# config
+with open('app.yaml') as config_yaml:
+    app_config = yaml.load(config_yaml)
 
 # Options
 define("port", default=8000, help="run on the given port", type=int)
@@ -19,6 +25,7 @@ class Application(tornado.web.Application):
         settings = dict(debug=options.debug, autoreload=True)
         tornado.web.Application.__init__(self, handlers, **settings)
         self.db = session
+        self.sentry_client = AsyncSentryClient(app_config['sentry'])
 
 app = Application()
 
