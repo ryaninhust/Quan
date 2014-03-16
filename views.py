@@ -76,17 +76,9 @@ class UserListHandler(AppHandler):
     def post(self):
         user = User(**self.request_json)
         self.db.add(user)
-
-        if 'access_token' in self.request_json:
-            access_token = self.request_json['oauth_token']
-            token_type = self.request_json['token_type']
-            oauth_token = OauthToken(
-                token_type=token_type, access_token=access_token)
-            oauth_token.user = user
-            self.db.add(oauth_token)
+        self.db.commit()
 
         token_dict = {'access_token': user.generate_key(), 'url': user.url}
-        self.db.commit()
         self.write(token_dict)
 
     def get(self):
